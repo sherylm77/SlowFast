@@ -36,9 +36,15 @@ python setup.py build develop
 - Download the desired model(s):
   - Go to MODEL_ZOO.md
   - Identify the row in the table corresponding to the model you want. Click the link under the model column to download the model and place the file in the same directory as Slowfast. Note the name of the config file listed under the config column.
+  - Edit the config file for the model you are using. Set NUM_GPUS to the number of GPUs you are using (i.e. 0). Also add the following at the end of the file:
+  ```
+  DEMO:
+    ENABLE: false
+  ```
 - Put the directory containing input videos in the Slowfast folder.
 - If using one of the SSV2 models:
   - In the directory containing input videos, add a file containing labels (don't have to be true labels) for each of the input videos. An example label file is given as examples/inputs/something-something-v2-validation.json. The label file must have this name.
+  - Copy the file examples/inputs/something-something-label-types.json to the directory containing input videos.
 
 ### Commands
 - Command template:
@@ -55,6 +61,7 @@ python get_latent_vectors.py "input/siq_videos" "Kinetics\c2\SLOWFAST_8x8_R50"
 In the SlowFast/examples/ folder, you will find examples of input videos, labels, output vectors, etc.
 - examples/inputs: directory containing 4 Social IQ videos
 - examples/inputs/something-something-v2-validation.json: label file containing labels for each video in examples/inputs
+- examples/inputs/something-something-label-types.json: label file containing labels for several SSV2 activities
 - examples/sample_outputs: npy files containing latent vectors for each video in examples/inputs
 
 ## Output
@@ -69,6 +76,7 @@ SlowFast
 |  |  |_ vid2.mp4
 |  |  |_ vid3.mp4
 |  |  |_ something-something-v2-validation.json
+|  |  |_ something-something-label-types.json
 ```
 
 Then you could run the following command:
