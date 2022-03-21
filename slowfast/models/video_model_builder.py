@@ -3,6 +3,7 @@
 
 """Video models."""
 
+import os
 import math
 from functools import partial
 import torch
@@ -180,6 +181,7 @@ class SlowFast(nn.Module):
         self.norm_module = get_norm(cfg)
         self.enable_detection = cfg.DETECTION.ENABLE
         self.num_pathways = 2
+        self.output_dir = os.path.join(os.path.dirname(cfg.DATA.PATH_TO_DATA_DIR), "output_vecs")
         self._construct_network(cfg)
         init_helper.init_weights(
             self, cfg.MODEL.FC_INIT_STD, cfg.RESNET.ZERO_INIT_FINAL_BN
@@ -402,7 +404,7 @@ class SlowFast(nn.Module):
                 dropout_rate=cfg.MODEL.DROPOUT_RATE,
                 act_func=cfg.MODEL.HEAD_ACT,
                 latent_vecs_flag=True,
-                output_dir="input/output_vecs",
+                output_dir=self.output_dir,
             )
 
     def forward(self, x, vid_id, bboxes=None):
