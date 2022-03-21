@@ -62,6 +62,8 @@ class Kinetics(torch.utils.data.Dataset):
 
         self._video_meta = {}
         self._num_retries = num_retries
+
+        self._video_names = []
         # For training or validation mode, one single clip is sampled from every
         # video. For testing, NUM_ENSEMBLE_VIEWS clips are sampled from every
         # video. For every clip, NUM_SPATIAL_CROPS is cropped spatially from
@@ -108,6 +110,7 @@ class Kinetics(torch.utils.data.Dataset):
                 path, label = path_label.split(
                     self.cfg.DATA.PATH_LABEL_SEPARATOR
                 )
+                self._video_names.append(path)
                 for idx in range(self._num_clips):
                     self._path_to_videos.append(
                         os.path.join(self.cfg.DATA.PATH_PREFIX, path)
@@ -406,3 +409,12 @@ class Kinetics(torch.utils.data.Dataset):
             (int): the number of videos in the dataset.
         """
         return len(self._path_to_videos)
+    
+    @property
+    def video_ids(self):
+        """
+        Returns:
+            (string list): list of ids of videos in the dataset.
+        """
+        print(self._video_names)
+        return self._video_names

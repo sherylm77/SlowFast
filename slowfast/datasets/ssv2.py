@@ -78,7 +78,7 @@ class Ssv2(torch.utils.data.Dataset):
         with pathmgr.open(
             os.path.join(
                 self.cfg.DATA.PATH_TO_DATA_DIR,
-                "something-something-v2-labels.json",
+                "something-something-label-types.json",
             ),
             "r",
         ) as f:
@@ -281,3 +281,11 @@ class Ssv2(torch.utils.data.Dataset):
             (int): the number of videos in the dataset.
         """
         return len(self._path_to_videos)
+
+    @property
+    def video_ids(self):
+        """
+        Returns:
+            (string list): list of ids of videos in the dataset.
+        """
+        return self._video_names

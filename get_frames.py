@@ -1,5 +1,3 @@
-from asyncore import write
-from fileinput import filename
 import os
 import subprocess
 import re

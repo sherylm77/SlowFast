@@ -47,6 +47,7 @@ def run(
     rank = shard_id * num_proc + local_rank
 
     try:
+        backend='gloo'
         torch.distributed.init_process_group(
             backend=backend,
             init_method=init_method,
@@ -56,7 +57,7 @@ def run(
     except Exception as e:
         raise e
 
-    torch.cuda.set_device(local_rank)
+    #torch.cuda.set_device(local_rank)
     ret = func(cfg)
     if output_queue is not None and local_rank == 0:
         output_queue.put(ret)

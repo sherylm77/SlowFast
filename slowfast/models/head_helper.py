@@ -6,6 +6,7 @@
 import torch
 import torch.nn as nn
 from detectron2.layers import ROIAlign
+import numpy as np
 
 
 class ResNetRoIHead(nn.Module):
@@ -146,6 +147,8 @@ class ResNetBasicHead(nn.Module):
         pool_size,
         dropout_rate=0.0,
         act_func="softmax",
+        latent_vecs_flag=False,
+        output_dir="",
     ):
         """
         The `__init__` method of any subclass should also contain these
@@ -166,6 +169,9 @@ class ResNetBasicHead(nn.Module):
                 softmax on the output. 'sigmoid': applies sigmoid on the output.
         """
         super(ResNetBasicHead, self).__init__()
+        self.latent_vecs_flag = latent_vecs_flag
+        print("DIMENSION:", dim_in)
+        self.output_vecs_dir = output_dir
         assert (
             len({len(pool_size), len(dim_in)}) == 1
         ), "pathway dimensions are not consistent."
@@ -195,7 +201,7 @@ class ResNetBasicHead(nn.Module):
                 "function.".format(act_func)
             )
 
-    def forward(self, inputs):
+    def forward(self, inputs, vid_id):
         assert (
             len(inputs) == self.num_pathways
         ), "Input tensor does not contain {} pathway".format(self.num_pathways)
@@ -209,6 +215,9 @@ class ResNetBasicHead(nn.Module):
         # Perform dropout.
         if hasattr(self, "dropout"):
             x = self.dropout(x)
+            if self.latent_vecs_flag: 
+                np.save(self.output_vecs_dir + "/output_latent_vec_" + vid_id, x)
+                print("Saved latent vector for video", vid_id)
         x = self.projection(x)
 
         # Performs fully convlutional inference.

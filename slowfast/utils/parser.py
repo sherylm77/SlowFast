@@ -10,7 +10,7 @@ import slowfast.utils.checkpoint as cu
 from slowfast.config.defaults import get_cfg
 
 
-def parse_args():
+def parse_args(model_config):
     """
     Parse the following arguments for a default parser for PySlowFast users.
     Args:
@@ -61,7 +61,7 @@ def parse_args():
     )
     if len(sys.argv) == 1:
         parser.print_help()
-    return parser.parse_args()
+    return parser.parse_args(['--cfg', "configs/"+model_config+".yaml"])
 
 
 def load_config(args):

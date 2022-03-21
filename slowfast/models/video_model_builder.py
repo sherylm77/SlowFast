@@ -23,7 +23,6 @@ try:
 except ImportError:
     checkpoint_wrapper = None
 
-
 # Number of blocks for different stages given the model depth.
 _MODEL_STAGE_DEPTH = {50: (3, 4, 6, 3), 101: (3, 4, 23, 3)}
 
@@ -402,9 +401,11 @@ class SlowFast(nn.Module):
                 ],  # None for AdaptiveAvgPool3d((1, 1, 1))
                 dropout_rate=cfg.MODEL.DROPOUT_RATE,
                 act_func=cfg.MODEL.HEAD_ACT,
+                latent_vecs_flag=True,
+                output_dir="input/output_vecs",
             )
 
-    def forward(self, x, bboxes=None):
+    def forward(self, x, vid_id, bboxes=None):
         x = self.s1(x)
         x = self.s1_fuse(x)
         x = self.s2(x)
@@ -418,9 +419,9 @@ class SlowFast(nn.Module):
         x = self.s4_fuse(x)
         x = self.s5(x)
         if self.enable_detection:
-            x = self.head(x, bboxes)
+            x = self.head(x, vid_id, bboxes)
         else:
-            x = self.head(x)
+            x = self.head(x, vid_id)
         return x
 
 
