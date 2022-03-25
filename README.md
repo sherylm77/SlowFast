@@ -1,67 +1,94 @@
-# PySlowFast
-
-PySlowFast is an open source video understanding codebase from FAIR that provides state-of-the-art video classification models with efficient training. This repository includes implementations of the following methods:
-
-- [SlowFast Networks for Video Recognition](https://arxiv.org/abs/1812.03982)
-- [Non-local Neural Networks](https://arxiv.org/abs/1711.07971)
-- [A Multigrid Method for Efficiently Training Video Models](https://arxiv.org/abs/1912.00998)
-- [X3D: Progressive Network Expansion for Efficient Video Recognition](https://arxiv.org/abs/2004.04730)
-- [Multiscale Vision Transformers](https://arxiv.org/abs/2104.11227.pdf)
-
-<div align="center">
-  <img src="demo/ava_demo.gif" width="600px"/>
-</div>
-
-## Introduction
-
-The goal of PySlowFast is to provide a high-performance, light-weight pytorch codebase provides state-of-the-art video backbones for video understanding research on different tasks (classification, detection, and etc). It is designed in order to support rapid implementation and evaluation of novel video research ideas. PySlowFast includes implementations of the following backbone network architectures:
-
-- SlowFast
-- Slow
-- C2D
-- I3D
-- Non-local Network
-- X3D
-
-## Updates
- - We now support [Multiscale Vision Transformers](https://arxiv.org/abs/2104.11227.pdf) on Kinetics and ImageNet. See [`projects/mvit`](./projects/mvit/README.md) for more information.
- - We now support [PyTorchVideo](https://github.com/facebookresearch/pytorchvideo) models and datasets. See [`projects/pytorchvideo`](./projects/pytorchvideo/README.md) for more information.
- - We now support [X3D Models](https://arxiv.org/abs/2004.04730). See [`projects/x3d`](./projects/x3d/README.md) for more information.
- - We now support [Multigrid Training](https://arxiv.org/abs/1912.00998) for efficiently training video models. See [`projects/multigrid`](./projects/multigrid/README.md) for more information.
- - PySlowFast is released in conjunction with our [ICCV 2019 Tutorial](https://alexander-kirillov.github.io/tutorials/visual-recognition-iccv19/).
-
-## License
-
-PySlowFast is released under the [Apache 2.0 license](LICENSE).
-
-## Model Zoo and Baselines
-
-We provide a large set of baseline results and trained models available for download in the PySlowFast [Model Zoo](MODEL_ZOO.md).
+# Latent Vectors Service
+## About
+This Python script is a wrapper to the PySlowfast set of models that will output the latent vectors given a set of input videos and the name of a specific PySlowfast model. This repo is meant for those who don’t need the predictions of the PySlowfast models but want an easy way to extract rich latent vectors for large numbers of input videos.
 
 ## Installation
+### Dependencies
+- Follow the instructions on the PySlowfast INSTALL.md page to download the dependencies in the list marked “Requirements”.
+- Download the following dependencies:
+  - yaml
+  ```
+  pip install PyYAML
+  ```
+  - pathlib
+  ```
+  pip install pathlib
+  ```
+  
+## Clone this repo
+- Clone the forked PySlowfast repo:
+```
+git clone https://github.com/sherylm77/SlowFast.git
+```
 
-Please find installation instructions for PyTorch and PySlowFast in [INSTALL.md](INSTALL.md). You may follow the instructions in [DATASET.md](slowfast/datasets/DATASET.md) to prepare the datasets.
+## Usage
 
-## Quick Start
+### Setup
+- Add this repository to $PYTHONPATH.
+```
+export PYTHONPATH=/path/to/SlowFast/slowfast:$PYTHONPATH
+```
+- Build PySlowFast by running
+```
+cd SlowFast
+python setup.py build develop
+```
+- Download the desired model(s):
+  - Go to MODEL_ZOO.md
+  - Identify the row in the table corresponding to the model you want. Click the link under the model column to download the model and place the file in the same directory as Slowfast. Note the name of the config file listed under the config column.
+  - Edit the config file for the model you are using. Set NUM_GPUS to the number of GPUs you are using (i.e. 0). Also add the following at the end of the file:
+  ```
+  DEMO:
+    ENABLE: false
+  ```
+- Put the directory containing input videos in the Slowfast folder.
+- If using one of the SSV2 models:
+  - In the directory containing input videos, add a file containing labels (don't have to be true labels) for each of the input videos. An example label file is given as examples/inputs/something-something-v2-validation.json. The label file must have this name.
+  - Copy the file examples/inputs/something-something-label-types.json to the directory containing input videos.
 
-Follow the example in [GETTING_STARTED.md](GETTING_STARTED.md) to start playing video models with PySlowFast.
+### Commands
+- Command template:
+```
+cd SlowFast
+python get_latent_vectors.py [input_videos_directory_name] [model_config_name]
+```
+- For example, to run using the Kinetics Slowfast 8x8 model, run the following command after cd'ing to the SlowFast folder
+```
+python get_latent_vectors.py "input/siq_videos" "Kinetics\c2\SLOWFAST_8x8_R50"
+```
 
-## Visualization Tools
+## Examples
+In the SlowFast/examples/ folder, you will find examples of input videos, labels, output vectors, etc.
+- examples/inputs: directory containing 4 Social IQ videos
+- examples/inputs/something-something-v2-validation.json: label file containing labels for each video in examples/inputs
+- examples/inputs/something-something-label-types.json: label file containing labels for several SSV2 activities
+- examples/sample_outputs: npy files containing latent vectors for each video in examples/inputs
 
-We offer a range of visualization tools for the train/eval/test processes, model analysis, and for running inference with trained model.
-More information at [Visualization Tools](VISUALIZATION_TOOLS.md).
+## Output
+After running a command (as in the Commands section), you can find a folder called ```output_vecs``` in the folder containing input videos. There should be one npy file for each input video.
 
-## Contributors
-PySlowFast is written and maintained by [Haoqi Fan](https://haoqifan.github.io/), [Yanghao Li](https://lyttonhao.github.io/), [Bo Xiong](https://www.cs.utexas.edu/~bxiong/), [Wan-Yen Lo](https://www.linkedin.com/in/wanyenlo/), [Christoph Feichtenhofer](https://feichtenhofer.github.io/).
+For example, your inputs might look like:
+```
+SlowFast
+|_ examples
+|  |_ inputs
+|  |  |_ vid1.mp4
+|  |  |_ vid2.mp4
+|  |  |_ vid3.mp4
+|  |  |_ something-something-v2-validation.json
+|  |  |_ something-something-label-types.json
+```
 
-## Citing PySlowFast
-If you find PySlowFast useful in your research, please use the following BibTeX entry for citation.
-```BibTeX
-@misc{fan2020pyslowfast,
-  author =       {Haoqi Fan and Yanghao Li and Bo Xiong and Wan-Yen Lo and
-                  Christoph Feichtenhofer},
-  title =        {PySlowFast},
-  howpublished = {\url{https://github.com/facebookresearch/slowfast}},
-  year =         {2020}
-}
+Then you could run the following command:
+```
+python get_latent_vectors.py "examples/inputs" "SSv2/SLOWFAST_16x8_R50_multigrid"
+```
+
+Your outputs would look like:
+```
+SlowFast
+|_ output_vecs
+|  |_ output_latent_vec_vid1.npy
+|  |_ output_latent_vec_vid2.npy
+|  |_ output_latent_vec_vid3.npy
 ```
