@@ -27,6 +27,7 @@ def edit_config_file(model_name, vid_dir_path):
     cfg["DEMO"]["ENABLE"] = False
     cfg["DEMO"]["LABEL_FILE_PATH"] = "validation_labels.json"
     cfg["DATA"]["PATH_TO_DATA_DIR"] = vid_dir_path
+    cfg["NUM_GPUS"] = 0
     if "Kinetics" in model_name:
         cfg["DATA"]["PATH_PREFIX"] = vid_dir_path
     else:
@@ -47,7 +48,7 @@ def get_latent_vectors():
     print(vid_dir_path, model_name)
 
     # call frames script to create frames
-    # get_frames.video_to_frames(vid_dir_path)
+    get_frames.video_to_frames(vid_dir_path)
     get_frames.get_frames_csv(vid_dir_path, model_name)
 
     edit_config_file(model_name, vid_dir_path)
