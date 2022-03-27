@@ -3,6 +3,7 @@
 
 """Multi-view test a video classification model."""
 
+from unittest import TestLoader
 import numpy as np
 import os
 import pickle
@@ -102,6 +103,7 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
                 vid_part2 = torch.unsqueeze(input_part2[i], 0)
                 vid = [vid_part1, vid_part2]
                 pred = model(vid, vid_ids[i])
+        break
             # preds = model(inputs)
             # Gather all the predictions across all the devices to perform ensemble.
     #         if cfg.NUM_GPUS > 1:
@@ -176,6 +178,8 @@ def test(cfg):
 
     # Create video testing loaders.
     test_loader = loader.construct_loader(cfg, "test")
+    print(list(test_loader))
+    print("LENGTH OF LOADER:", len(list(test_loader)))
     logger.info("Testing model for {} iterations".format(len(test_loader)))
 
     if cfg.DETECTION.ENABLE:
