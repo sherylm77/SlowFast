@@ -208,6 +208,7 @@ def load_checkpoint(
     Returns:
         (int): the number of training epoch of the checkpoint.
     """
+    # path_to_checkpoint = 'SLOWFAST_8x8_R50.pkl'
     assert pathmgr.exists(
         path_to_checkpoint
     ), "Checkpoint '{}' not found".format(path_to_checkpoint)
@@ -287,7 +288,7 @@ def load_checkpoint(
     else:
         # Load the checkpoint on CPU to avoid GPU mem spike.
         with pathmgr.open(path_to_checkpoint, "rb") as f:
-            checkpoint = torch.load(f, map_location="cpu")
+            checkpoint = torch.load(f, encoding="latin1", map_location="cpu")
         model_state_dict_3d = (
             model.module.state_dict() if data_parallel else model.state_dict()
         )
@@ -468,7 +469,7 @@ def load_test_checkpoint(cfg, model):
             cfg.NUM_GPUS > 1,
             None,
             inflation=False,
-            convert_from_caffe2=cfg.TEST.CHECKPOINT_TYPE == "caffe2",
+            convert_from_caffe2=cfg.TRAIN.CHECKPOINT_TYPE == "caffe2",
         )
     elif has_checkpoint(cfg.OUTPUT_DIR):
         last_checkpoint = get_last_checkpoint(cfg.OUTPUT_DIR)
