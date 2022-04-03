@@ -22,6 +22,8 @@ def edit_config_file(model_name, vid_dir_path):
         cfg = yaml.load(cfg_file, Loader=yaml.FullLoader)
 
     cfg["TRAIN"]["ENABLE"] = False
+    if "SSV2" in model_name:
+        cfg["TRAIN"]["CHECKPOINT_TYPE"] = "pytorch"
     cfg["TEST"]["ENABLE"] = True
     cfg["TEST"]["CHECKPOINT_FILE_PATH"] = os.path.basename(model_name) + ".pkl"
     cfg["DEMO"]["ENABLE"] = False
