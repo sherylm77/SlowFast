@@ -2,7 +2,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
 """ResNe(X)t Head helper."""
-
+import os
 import torch
 import torch.nn as nn
 from detectron2.layers import ROIAlign
@@ -216,6 +216,8 @@ class ResNetBasicHead(nn.Module):
         if hasattr(self, "dropout"):
             x = self.dropout(x)
             if self.latent_vecs_flag: 
+                if not os.path.exists(self.output_vecs_dir):
+                    os.makedirs(self.output_vecs_dir)
                 np.save(self.output_vecs_dir + "/output_latent_vec_" + vid_id, x)
                 print("Saved latent vector for video", vid_id)
         x = self.projection(x)
