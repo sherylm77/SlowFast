@@ -178,8 +178,6 @@ def test(cfg):
 
     # Create video testing loaders.
     test_loader = loader.construct_loader(cfg, "test")
-    print(list(test_loader))
-    print("LENGTH OF LOADER:", len(list(test_loader)))
     logger.info("Testing model for {} iterations".format(len(test_loader)))
 
     if cfg.DETECTION.ENABLE:
