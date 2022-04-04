@@ -4,8 +4,58 @@ This Python script is a wrapper to the PySlowfast set of models that will output
 
 ## Installation
 ### Dependencies
-- Follow the instructions on the PySlowfast INSTALL.md page to download the dependencies in the list marked “Requirements”.
+- Python version >= 3.8
 - Download the following dependencies:
+  - numpy
+  - PyTorch and the corresponding version of torchvision (install together at https://pytorch.org/)
+  - fvcore
+  ```
+  pip install git+https://github.com/facebookresearch/fvcore
+  ```
+  - simplejson
+  ```
+  pip install simplejson
+  ```
+  - GCC >= 4.9
+  - PyAV
+  ```
+  conda install av -c conda-forge
+  ```
+  - ffmpeg (4.0 is prefereed, will be installed along with PyAV)
+  - tqdm: (will be installed along with fvcore)
+  - iopath
+  ```
+  pip install -U iopath
+  ```
+  or
+  ```
+  conda install -c iopath iopath
+  ```
+  - psutil
+  ```
+  pip install psutil
+  ```
+  - OpenCV
+  ```
+  pip install opencv-python
+  ```
+  - tensorboard
+  ```
+  pip install tensorboard
+  ```
+  - PyTorchVideo
+  ```
+  pip install pytorchvideo
+  ```
+  - Detectron2
+  ```
+  git clone https://github.com/facebookresearch/detectron2 detectron2_repo
+  pip install -e detectron2_repo
+  ```
+  - FairScale
+  ```
+  pip install git+https://github.com/facebookresearch/fairscale
+  ```
   - yaml
   ```
   pip install PyYAML
@@ -87,8 +137,10 @@ python get_latent_vectors.py "examples/inputs" "SSv2/SLOWFAST_16x8_R50_multigrid
 Your outputs would look like:
 ```
 SlowFast
-|_ output_vecs
-|  |_ output_latent_vec_vid1.npy
-|  |_ output_latent_vec_vid2.npy
-|  |_ output_latent_vec_vid3.npy
+|_ examples
+|  |_ inputs
+|  |  |_ output_vecs
+|  |  |  |_ output_latent_vec_vid1.npy
+|  |  |  |_ output_latent_vec_vid2.npy
+|  |  |  |_ output_latent_vec_vid3.npy
 ```
