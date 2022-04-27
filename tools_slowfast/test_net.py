@@ -177,40 +177,41 @@ def test(cfg):
     cu.load_test_checkpoint(cfg, model)
 
     # Create video testing loaders.
-    test_loader = loader.construct_loader(cfg, "test")
-    logger.info("Testing model for {} iterations".format(len(test_loader)))
+    for vid in cfg.TEST.VIDEOS[0]:
+        test_loader = loader.construct_loader(cfg, "test", vid)
+        logger.info("Testing model for {} iterations".format(len(test_loader)))
 
-    if cfg.DETECTION.ENABLE:
-        assert cfg.NUM_GPUS == cfg.TEST.BATCH_SIZE or cfg.NUM_GPUS == 0
-        test_meter = AVAMeter(len(test_loader), cfg, mode="test")
-    else:
-        assert (
-            test_loader.dataset.num_videos
-            % (cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS)
-            == 0
-        )
-        # Create meters for multi-view testing.
-        test_meter = TestMeter(
-            test_loader.dataset.num_videos
-            // (cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS),
-            cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS,
-            cfg.MODEL.NUM_CLASSES,
-            len(test_loader),
-            cfg.DATA.MULTI_LABEL,
-            cfg.DATA.ENSEMBLE_METHOD,
-        )
+        if cfg.DETECTION.ENABLE:
+            assert cfg.NUM_GPUS == cfg.TEST.BATCH_SIZE or cfg.NUM_GPUS == 0
+            test_meter = AVAMeter(len(test_loader), cfg, mode="test")
+        else:
+            # assert (
+            #     test_loader.dataset.num_videos
+            #     % (cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS)
+            #     == 0
+            # )
+            # Create meters for multi-view testing.
+            test_meter = TestMeter(
+                test_loader.dataset.num_videos
+                // (cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS),
+                cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS,
+                cfg.MODEL.NUM_CLASSES,
+                len(test_loader),
+                cfg.DATA.MULTI_LABEL,
+                cfg.DATA.ENSEMBLE_METHOD,
+            )
 
-    # Set up writer for logging to Tensorboard format.
-    if cfg.TENSORBOARD.ENABLE and du.is_master_proc(
-        cfg.NUM_GPUS * cfg.NUM_SHARDS
-    ):
-        writer = tb.TensorboardWriter(cfg)
-    else:
-        writer = None
+        # Set up writer for logging to Tensorboard format.
+        if cfg.TENSORBOARD.ENABLE and du.is_master_proc(
+            cfg.NUM_GPUS * cfg.NUM_SHARDS
+        ):
+            writer = tb.TensorboardWriter(cfg)
+        else:
+            writer = None
 
-    # # Perform multi-view test on the entire dataset.
-    global vid_ids
-    vid_ids = test_loader.dataset.video_ids
-    test_meter = perform_test(test_loader, model, test_meter, cfg, writer)
-    if writer is not None:
-        writer.close()
+        # # Perform multi-view test on the entire dataset.
+        global vid_ids
+        vid_ids = test_loader.dataset.video_ids
+        test_meter = perform_test(test_loader, model, test_meter, cfg, writer)
+        if writer is not None:
+            writer.close()

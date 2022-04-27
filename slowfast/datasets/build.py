@@ -12,7 +12,7 @@ The call should return a `torch.utils.data.Dataset` object.
 """
 
 
-def build_dataset(dataset_name, cfg, split):
+def build_dataset(dataset_name, cfg, split, video):
     """
     Build a dataset, defined by `dataset_name`.
     Args:
@@ -28,4 +28,4 @@ def build_dataset(dataset_name, cfg, split):
     # in configs may be in lowercase but the name of dataset class should always
     # start with an uppercase letter.
     name = dataset_name.capitalize()
-    return DATASET_REGISTRY.get(name)(cfg, split)
+    return DATASET_REGISTRY.get(name)(cfg, split, video)

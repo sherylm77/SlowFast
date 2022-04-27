@@ -30,7 +30,7 @@ class Ssv2(torch.utils.data.Dataset):
     bottom crop if the height is larger than the width.
     """
 
-    def __init__(self, cfg, mode, num_retries=10):
+    def __init__(self, cfg, mode, video, num_retries=10):
         """
         Load Something-Something V2 data (frame paths, labels, etc. ) to a given
         Dataset object. The dataset could be downloaded from Something-Something
@@ -66,11 +66,12 @@ class Ssv2(torch.utils.data.Dataset):
             self._num_clips = (
                 cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS
             )
+        self._num_clips = 1
 
         logger.info("Constructing Something-Something V2 {}...".format(mode))
-        self._construct_loader()
+        self._construct_loader(video)
 
-    def _construct_loader(self):
+    def _construct_loader(self, test_video):
         """
         Construct the video loader.
         """
@@ -97,13 +98,14 @@ class Ssv2(torch.utils.data.Dataset):
         self._video_names = []
         self._labels = []
         for video in label_json:
-            video_name = video["id"]
-            template = video["template"]
-            template = template.replace("[", "")
-            template = template.replace("]", "")
-            label = int(label_dict[template])
-            self._video_names.append(video_name)
-            self._labels.append(label)
+            if video['id'] in test_video:
+                video_name = video["id"]
+                template = video["template"]
+                template = template.replace("[", "")
+                template = template.replace("]", "")
+                label = int(label_dict[template])
+                self._video_names.append(video_name)
+                self._labels.append(label)
 
         path_to_file = os.path.join(
             self.cfg.DATA.PATH_TO_DATA_DIR,
@@ -117,6 +119,11 @@ class Ssv2(torch.utils.data.Dataset):
             path_to_file, self.cfg.DATA.PATH_PREFIX
         )
 
+        for key, value in self._path_to_videos.copy().items():
+            val = value[0]
+            t = test_video.split('.')[0]
+            if not (t in val):
+                self._path_to_videos.pop(key)
         assert len(self._path_to_videos) == len(self._video_names), (
             len(self._path_to_videos),
             len(self._video_names),
@@ -164,18 +171,32 @@ class Ssv2(torch.utils.data.Dataset):
         Returns:
             seq (list): the indexes of frames of sampled from the video.
         """
-        num_frames = self.cfg.DATA.NUM_FRAMES
-        video_length = len(self._path_to_videos[index])
+        # num_frames = self.cfg.DATA.NUM_FRAMES
+        # video_length = len(self._path_to_videos[index])
 
-        seg_size = float(video_length - 1) / num_frames
+        # seg_size = float(video_length - 1) / num_frames
+        # seq = []
+        # for i in range(num_frames):
+        #     start = int(np.round(seg_size * i))
+        #     end = int(np.round(seg_size * (i + 1)))
+        #     if self.mode == "train":
+        #         seq.append(random.randint(start, end))
+        #     else:
+        #         seq.append((start + end) // 2)
+
+        # return seq
+
+        vid = os.path.basename(self._path_to_videos[index][0]).split('.')[0][:-4] + ".mp4"
+        video_length = self.cfg.TEST.VIDEOS[0][vid]
+        frames_per_sec = 30
+        seg_size = frames_per_sec / 2
+        num_frames = video_length*frames_per_sec
+
         seq = []
-        for i in range(num_frames):
-            start = int(np.round(seg_size * i))
+        n = num_frames//int(seg_size)
+        for i in range(n):
             end = int(np.round(seg_size * (i + 1)))
-            if self.mode == "train":
-                seq.append(random.randint(start, end))
-            else:
-                seq.append((start + end) // 2)
+            seq.append(end)
 
         return seq
 
