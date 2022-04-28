@@ -98,11 +98,49 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
             vid_ids = test_loader.dataset.video_ids
             input_part1 = inputs[0]
             input_part2 = inputs[1]
-            for i in range(len(vid_ids)):
-                vid_part1 = torch.unsqueeze(input_part1[i], 0)
-                vid_part2 = torch.unsqueeze(input_part2[i], 0)
-                vid = [vid_part1, vid_part2]
-                pred = model(vid, vid_ids[i])
+            preds = []
+
+            vid_part1 = torch.squeeze(input_part1)
+            vid_part2 = torch.squeeze(input_part2)
+            stop_flag = False
+
+            for i in range(vid_part2.shape[1]):
+                if stop_flag:
+                    break
+                start = i // 4
+
+                vid_1_r = torch.unsqueeze(vid_part1[0][start:start+1], 0)
+                vid_1_g = torch.unsqueeze(vid_part1[1][start:start+1], 0)
+                vid_1_b = torch.unsqueeze(vid_part1[2][start:start+1], 0)
+                vide1 = torch.concat([vid_1_r, vid_1_g, vid_1_b], 0)
+                v1 = torch.unsqueeze(vide1, 0)
+
+                if i+4 > vid_part2.shape[1] - 1:
+                    end = vid_part2.shape[1]
+                    stop_flag = True
+                else: end = i+4
+
+                vid_r = torch.unsqueeze(vid_part2[0][i:end], 0)
+                vid_g = torch.unsqueeze(vid_part2[1][i:end], 0)
+                vid_b = torch.unsqueeze(vid_part2[2][i:end], 0)
+                vide2 = torch.concat([vid_r, vid_g, vid_b], 0)
+                v2 = torch.unsqueeze(vide2, 0)
+                vid = [v1, v2]
+                pred = model(vid, vid_ids[0])
+                preds.append(pred)
+
+            output_vec = preds[0]
+            if len(preds) != 1:
+                output_vec = torch.unsqueeze(output_vec, 0)
+                for i in range(1, len(preds)):
+                    vec = torch.unsqueeze(preds[i], 0)
+                    output_vec = torch.concat([output_vec, vec], 0)
+
+            output_vecs_dir = os.path.join(os.path.dirname(cfg.DATA.PATH_TO_DATA_DIR), "output_vecs")
+            if not os.path.exists(output_vecs_dir):
+                os.makedirs(output_vecs_dir)
+            np.save(output_vecs_dir + "/output_latent_vec_" + vid_ids[0], output_vec)
+            print("Saved latent vector for video", vid_ids[0])
         break
             # preds = model(inputs)
             # Gather all the predictions across all the devices to perform ensemble.
