@@ -15,7 +15,7 @@ import get_frames
 
 def edit_config_file(model_name, vid_dir_path):
     num_clips = 0
-    videos = {}
+    videos = {}           
     for vid in os.listdir(vid_dir_path):
         if ".mp4" in vid:
             clip = VideoFileClip(os.path.join(vid_dir_path, vid))

@@ -194,7 +194,7 @@ class Ssv2(torch.utils.data.Dataset):
 
         seq = []
         n = num_frames//int(seg_size)
-        for i in range(n):
+        for i in range(n-1):
             end = int(np.round(seg_size * (i + 1)))
             seq.append(end)
 
@@ -310,3 +310,11 @@ class Ssv2(torch.utils.data.Dataset):
             (string list): list of ids of videos in the dataset.
         """
         return self._video_names
+    
+    @property
+    def frames(self):
+        """
+        Returns:
+            (int list): list of frames of video in the dataset.
+        """
+        return self.get_seq_frames(0)
