@@ -1,4 +1,4 @@
-# Latent Vectors Service
+# Activity Vectors Service
 ## About
 This Python script is a wrapper to the PySlowfast set of models that will output the latent vectors given a set of input videos and the name of a specific PySlowfast model. This repo is meant for those who don’t need the predictions of the PySlowfast models but want an easy way to extract rich latent vectors for large numbers of input videos.
 
