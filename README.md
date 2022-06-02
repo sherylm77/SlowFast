@@ -62,7 +62,7 @@ In the SlowFast/examples/ folder, you will find examples of input videos, labels
 - examples/inputs: directory containing 4 Social IQ videos
 - examples/inputs/something-something-v2-validation.json: label file containing labels for each video in examples/inputs
 - examples/inputs/something-something-label-types.json: label file containing labels for several SSV2 activities
-- examples/sample_outputs: npy files containing latent vectors for each video in examples/inputs
+- examples/sample_outputs: pk files containing latent vectors and time intervals for each video in examples/inputs
 
 ## Output
 After running a command (as in the Commands section), you can find a folder called ```output_vecs``` in the folder containing input videos. There should be one npy file for each input video.
@@ -88,7 +88,7 @@ Your outputs would look like:
 ```
 SlowFast
 |_ output_vecs
-|  |_ output_latent_vec_vid1.npy
-|  |_ output_latent_vec_vid2.npy
-|  |_ output_latent_vec_vid3.npy
+|  |_ output_latent_vec_vid1.pk
+|  |_ output_latent_vec_vid2.pk
+|  |_ output_latent_vec_vid3.pk
 ```
