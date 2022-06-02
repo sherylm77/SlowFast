@@ -154,11 +154,11 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
             output_vecs_dir = os.path.join(os.path.dirname(cfg.DATA.PATH_TO_DATA_DIR), "output_vecs")
             if not os.path.exists(output_vecs_dir):
                 os.makedirs(output_vecs_dir)
-            # pk_file = os.path.join(output_vecs_dir, vid_ids[0] + ".pk")
-            # vid_dict = {vid_ids[0]: {'features': output_vec, 'intervals': intervals} }
-            np.save(output_vecs_dir + "/output_latent_vec_" + vid_ids[0], output_vec)
-            # with open(pk_file, 'wb') as f:
-            #     pickle.dump(vid_dict, f)
+            pk_file = os.path.join(output_vecs_dir, vid_ids[0] + ".pk")
+            vid_dict = {vid_ids[0]: {'features': output_vec, 'intervals': intervals} }
+            # np.save(output_vecs_dir + "/output_latent_vec_" + vid_ids[0], output_vec)
+            with open(pk_file, 'wb') as f:
+                pickle.dump(vid_dict, f)
             print("Saved latent vector for video", vid_ids[0])
         break
             # preds = model(inputs)
