@@ -215,6 +215,7 @@ class ResNetBasicHead(nn.Module):
         # Perform dropout.
         if hasattr(self, "dropout"):
             x = self.dropout(x)
+            # return the vector before doing projection
             if self.latent_vecs_flag: 
                 return x
         x = self.projection(x)

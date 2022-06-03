@@ -189,6 +189,7 @@ class Ssv2(torch.utils.data.Dataset):
         vid = os.path.basename(self._path_to_videos[index][0]).split('.')[0][:-4] + ".mp4"
         video_length = self.cfg.TEST.VIDEOS[0][vid]
         frames_per_sec = 30
+        # get frame intervals every 15 frames (corresponds to every half second)
         seg_size = frames_per_sec / 2
         num_frames = video_length*frames_per_sec
 

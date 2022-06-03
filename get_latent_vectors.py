@@ -19,7 +19,7 @@ def edit_config_file(model_name, vid_dir_path):
     for vid in os.listdir(vid_dir_path):
         if ".mp4" in vid:
             clip = VideoFileClip(os.path.join(vid_dir_path, vid))
-            num_clips += 30*clip.duration
+            num_clips += 30*clip.duration # 30 frames per second
             videos[vid] = int(clip.duration)
     num_clips = int(num_clips) + 10
 
@@ -31,6 +31,7 @@ def edit_config_file(model_name, vid_dir_path):
         # scalar values to Python the dictionary format
         cfg = yaml.load(cfg_file, Loader=yaml.FullLoader)
 
+    # modify values in config file
     cfg["TRAIN"]["ENABLE"] = False
     if "SSV2" in model_name:
         cfg["TRAIN"]["CHECKPOINT_TYPE"] = "pytorch"
@@ -59,17 +60,15 @@ def get_latent_vectors():
     vid_dir_path = args.vid_dir_path
     model_name = args.model_config_name
 
-    print(vid_dir_path, model_name)
-
     # call frames script to create frames
     get_frames.video_to_frames(vid_dir_path)
     get_frames.get_frames_csv(vid_dir_path, model_name)
 
+    # change config file to match requested model and directory of input videos
     edit_config_file(model_name, vid_dir_path)
 
     # run run_net.py
     run_net.main(model_name)
-    # video_model_builder.py and head_helper.py are modified to save latent vectors
 
 def main():
     get_latent_vectors()

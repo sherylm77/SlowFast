@@ -97,11 +97,14 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
 
             vid_ids = test_loader.dataset.video_ids
             frames = test_loader.dataset.frames
+
+            # make list of time intervals in video
             frames = [x/30 for x in frames]
             second_frames = [x for x in frames]
             frames.insert(0, 0) 
             frames.pop(len(frames)-1)
             intervals = np.vstack((frames, second_frames)).T
+
             input_part1 = inputs[0]
             input_part2 = inputs[1]
             preds = []
@@ -110,6 +113,7 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
             vid_part2 = torch.squeeze(input_part2)
             stop_flag = False
 
+            # if the video is too short
             if input_part1.shape[2] == 0:
                 print("CANT DO VIDEO")
                 return test_meter
@@ -142,6 +146,7 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
                 v2 = torch.unsqueeze(vide2, 0)
                 vid = [v1, v2]
                 pred = model(vid, vid_ids[0])
+                # append the activity vector for this interval to the predictions list
                 preds.append(pred)
 
             output_vec = preds[0]
@@ -235,6 +240,7 @@ def test(cfg):
 
     # Create video testing loaders.
     for vid in cfg.TEST.VIDEOS[0]:
+        # put one video in test loader at a time so that activity vectors can be saved distinctly
         test_loader = loader.construct_loader(cfg, "test", vid)
         logger.info("Testing model for {} iterations".format(len(test_loader)))
         print("video:", vid)
